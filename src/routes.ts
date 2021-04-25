@@ -1,11 +1,11 @@
-import MainLayout from './components/MainLayout.svelte';
-import HeaderlessLayout from './components/HeaderlessLayout.svelte';
-import SignIn from './views/SignIn.svelte';
-import SignUp from './views/SignUp.svelte';
-import Builds from './views/Builds.svelte';
-import Cabinet from './views/Cabinet.svelte';
-import Configurator from './views/Configurator.svelte';
-import CustomBuilds from './views/CustomBuilds.svelte';
+import MainLayout from './layouts/MainLayout.svelte';
+import HeaderlessLayout from './layouts/HeaderlessLayout.svelte';
+import SignIn from './components/SignIn.svelte';
+import SignUp from './components/SignUp.svelte';
+import Builds from './components/Builds.svelte';
+import Cabinet from './components/Cabinet.svelte';
+import Configurator from './components/Configurator.svelte';
+import CustomBuilds from './components/CustomBuilds.svelte';
 
 const routes = [
   { name: '/', component: Builds, layout: MainLayout },

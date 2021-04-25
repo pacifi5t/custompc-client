@@ -3,9 +3,4 @@
   import { routes } from './routes';
 </script>
 
-<div class="container">
-  <Router {routes} />
-</div>
-
-<style>
-</style>
+<Router {routes} />

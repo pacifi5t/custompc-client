@@ -5,7 +5,6 @@
   const params = {};
 </script>
 
-<div class="wrapper">
-  <h1>Headerless</h1>
+<div class="layout">
   <Route {currentRoute} {params} />
 </div>

@@ -1,3 +1,52 @@
+//Delete everything below to use the default theme
+@use '@material/theme/color-palette';
+
+$background: #fff;
+
+@use '@material/theme/index' as theme with (
+  $primary: color-palette.$orange-800,
+  $secondary: color-palette.$teal-600,
+  $surface: #fff,
+  $background: $background,
+  $error: #b00020,
+);
+
 @use "@material/typography/mdc-typography";
 
-//Delete everything below to use the default theme
+html,
+body {
+  background-color: $background;
+  color: if(theme.contrast-tone($background) == 'dark', #000, #fff);
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.layout {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.glob-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.glob-paper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+a {
+  color: color-palette.$blue-500;
+}
+a:visited {
+  color: color-palette.$blue-800;
+}
