@@ -1,24 +1,11 @@
 <script>
-  import Button, { Label, Icon } from "@smui/button/styled";
-  let clicked = 0;
+  import { Router } from 'svelte-router-spa';
+  import { routes } from './routes';
 </script>
 
 <div class="container">
-  <Button on:click={() => clicked++}>
-    <Icon class="material-icons">thumb_up</Icon>
-    <Label>Click Me</Label>
-  </Button>
-  <p class="mdc-typography--body1">
-    {#if clicked}
-      You've clicked the button {clicked} time{clicked === 1 ? "" : "s"}.
-    {:else}
-      <span class="grayed">You haven't clicked the button.</span>
-    {/if}
-  </p>
+  <Router {routes} />
 </div>
 
 <style>
-  .grayed {
-    opacity: 0.6;
-  }
 </style>
