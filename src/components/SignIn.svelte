@@ -1,13 +1,10 @@
 <script lang="ts">
     import Textfield from '@smui/textfield/styled';
-    import HelperText from '@smui/textfield/helper-text/styled';
     import Button, { Label } from '@smui/button/styled';
     import Paper, { Title, Content } from '@smui/paper/styled';
   
-    let username = '';
     let email = '';
     let password = '';
-    let confirm = '';
   </script>
   
   <div class="glob-form">
@@ -31,11 +28,7 @@
             bind:value={password}
             label="Пароль"
             required
-          >
-            <HelperText slot="helper"
-              >Не менее 8 символов, должны быть заглавные буквы</HelperText
-            >
-          </Textfield>
+          />
         </div>
         <div class="btn">
           <Button variant="raised">
