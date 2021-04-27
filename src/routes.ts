@@ -12,23 +12,8 @@ const routes = [
   { name: 'signin', component: SignIn, layout: HeaderlessLayout },
   { name: 'signup', component: SignUp, layout: HeaderlessLayout },
   { name: 'custom', component: CustomBuilds, layout: MainLayout },
-  { name: 'configurator', component: Configurator, layout: MainLayout }
-  /*{
-    name: 'signup',
-    component: SignUp,
-    onlyIf: { guard: userIsAdmin, redirect: '/login' },
-    nestedRoutes: [
-      { name: 'index', component: AdminIndex },
-      {
-        name: 'employees',
-        component: '',
-        nestedRoutes: [
-          { name: 'index', component: EmployeesIndex },
-          { name: 'show/:id', component: EmployeesShow }
-        ]
-      }
-    ]
-  }*/
+  { name: 'configurator', component: Configurator, layout: MainLayout },
+  { name: 'user', component: Cabinet, layout: MainLayout }
 ];
 
 export { routes };

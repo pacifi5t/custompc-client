@@ -1,7 +1,7 @@
 //Delete everything below to use the default theme
 @use '@material/theme/color-palette';
 
-$background: #fff;
+$background: hsl(0, 0%, 5%);
 
 @use '@material/theme/index' as theme with (
   $primary: color-palette.$orange-800,
@@ -19,9 +19,21 @@ body {
   color: if(theme.contrast-tone($background) == 'dark', #000, #fff);
 }
 
-a {
-  color: color-palette.$blue-500;
+.nav-item a,
+.logo a {
+  text-decoration: none;
+  outline: none;
+  color: hsl(0, 0%, 75%);
 }
-a:visited {
-  color: color-palette.$blue-800;
+
+.logo a {
+  color: white;
+}
+
+.nav-item a:visited {
+  color: hsl(0, 0%, 75%);
+}
+
+.nav-item a:hover {
+  color: hsl(0, 0%, 90%);
 }
