@@ -1,0 +1,33 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.layout {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.glob-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.glob-paper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.glob-textfield {
+  width: 20em;
+  margin-bottom: 10px;
+}

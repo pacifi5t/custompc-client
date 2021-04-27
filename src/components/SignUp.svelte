@@ -78,10 +78,10 @@
 
 <style>
   .text {
-    margin-top: 10px;
+    margin-bottom: 10px;
   }
 
   .btn {
-    margin-top: 20px;
+    margin: 10px;
   }
 </style>
