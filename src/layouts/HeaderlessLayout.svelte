@@ -5,6 +5,14 @@
   const params = {};
 </script>
 
-<div class="layout">
+<div class="headerless-layout">
   <Route {currentRoute} {params} />
 </div>
+
+<style>
+  .headerless-layout {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+</style>
