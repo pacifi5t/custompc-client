@@ -13,11 +13,11 @@ $background: hsl(0, 0%, 5%);
 
 @use "@material/typography/mdc-typography";
 
-html,
+/*html,
 body {
   background-color: $background;
   color: if(theme.contrast-tone($background) == 'dark', #000, #fff);
-}
+}*/
 
 .nav-item a,
 .logo a {

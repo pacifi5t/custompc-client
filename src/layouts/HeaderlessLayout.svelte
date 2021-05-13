@@ -2,7 +2,7 @@
   import { Route } from 'svelte-router-spa';
 
   export let currentRoute;
-  const params = {};
+  export let params;
 </script>
 
 <div class="headerless-layout">
