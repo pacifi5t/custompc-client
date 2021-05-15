@@ -1,4 +1,7 @@
 <script lang="ts">
+  export let currentRoute;
+  export let params;
+
   import Textfield from '@smui/textfield/styled';
   import Button, { Label } from '@smui/button/styled';
   import Paper, { Title, Content } from '@smui/paper/styled';
@@ -6,15 +9,13 @@
   import IconButton from '@smui/icon-button/styled';
   import { navigateTo } from 'svelte-router-spa';
   import axios from 'axios';
+  import { setCookie } from '../cookies';
 
   const requestUrl = 'http://localhost:9999/api/v1';
 
   let email = '';
   let password = '';
   let snackbarNoUser;
-
-  export let currentRoute;
-  export let params;
 
   async function signIn() {
     const res = await axios.get(requestUrl + '/users/auth', {
@@ -31,17 +32,13 @@
 
     let date = new Date();
     date.setDate(date.getDate() + 28);
+    
     setCookie('uid', res.data[0], date);
-    setCookie('token', res.data[1], date);
-
-    //localStorage.setItem('id', res.data[0]);
-    //localStorage.setItem('token', res.data[1]);
+    setCookie('uname', res.data[1], date);
+    setCookie('urole', res.data[2], date);
+    setCookie('token', res.data[3], date);
 
     navigateTo('/');
-  }
-
-  function setCookie(name: string, value: string, exDate: Date) {
-    document.cookie = `${name}=${value}; samesite=strict; expires=${exDate}; path=/`;
   }
 </script>
 
@@ -60,6 +57,7 @@
       <Textfield
         class="glob-textfield"
         variant="standard"
+        type="password"
         bind:value={password}
         label="Пароль"
         required

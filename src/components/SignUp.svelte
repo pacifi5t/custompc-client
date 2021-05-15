@@ -1,4 +1,7 @@
 <script lang="ts">
+  export let currentRoute;
+  export let params;
+  
   import Textfield from '@smui/textfield/styled';
   import HelperText from '@smui/textfield/helper-text/styled';
   import Button, { Label } from '@smui/button/styled';
@@ -16,9 +19,6 @@
 
   let snackbarIncorrect;
   let snackbarCollisions;
-
-  export let currentRoute;
-  export let params;
 
   async function signUp() {
     if (!isValid()) {

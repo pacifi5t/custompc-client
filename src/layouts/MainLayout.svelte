@@ -1,8 +1,23 @@
-<script>
-  import { Route, Navigate } from 'svelte-router-spa';
-
+<script lang="ts">
   export let currentRoute;
   export let params;
+
+  import { Route, Navigate, navigateTo } from 'svelte-router-spa';
+  import Button, { Label, Icon } from '@smui/button/styled';
+  import IconButton from '@smui/icon-button/styled';
+  import Dialog, { Title, Content, Actions } from '@smui/dialog/styled';
+  import DataTable, { Head, Body, Row, Cell } from '@smui/data-table/styled';
+  import { getCookie, removeCookie } from '../cookies';
+
+  let open;
+  let uname = getCookie('uname');
+
+  function logOut() {
+    removeCookie('uname');
+    removeCookie('uid');
+    removeCookie('token');
+    uname = getCookie('uname');
+  }
 </script>
 
 <div>
@@ -14,7 +29,20 @@
         <Navigate to="configurator">КОНФИГУРАТОР</Navigate>
       </div>
       <div style="flex-grow: 1;" />
-      <div class="nav-item"><Navigate to="user">Пользователь</Navigate></div>
+
+      {#if uname !== undefined}
+        <div class="nav-item"><Navigate to="user">{uname}</Navigate></div>
+        <IconButton class="material-icons" on:click={() => (open = true)}>
+          shopping_basket
+        </IconButton>
+        <IconButton class="material-icons" on:click={logOut}>logout</IconButton>
+      {:else}
+        <div class="nav-item"><Navigate to="signin">Войти</Navigate></div>
+        <div class="nav-item">
+          <Navigate to="signup">Зарегистрироваться</Navigate>
+        </div>
+      {/if}
+
     </nav>
   </div>
   <div class="empty" />
@@ -22,6 +50,35 @@
 <div class="main">
   <Route {currentRoute} {params} />
 </div>
+
+<Dialog
+  bind:open
+  aria-labelledby="simple-title"
+  aria-describedby="simple-content"
+>
+  <Title id="simple-title">Корзина</Title>
+  <Content id="simple-content">
+    <DataTable table$aria-label="People list" style="max-width: 100%;">
+      <Body>
+        <!-- This must be in cycle after creating a build is implemented -->
+        <Row>
+          <Cell>Steve</Cell>
+          <Cell>Red</Cell>
+          <Cell numeric>45</Cell>
+          <Cell><IconButton class="material-icons">close</IconButton></Cell>
+        </Row>
+      </Body>
+    </DataTable>
+  </Content>
+  <Actions>
+    <Button>
+      <Label>Оформить заказ</Label>
+    </Button>
+    <Button>
+      <Label>Закрыть</Label>
+    </Button>
+  </Actions>
+</Dialog>
 
 <style lang="scss">
   $nav-height: 3em;

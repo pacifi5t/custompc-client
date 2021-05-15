@@ -1,8 +1,8 @@
 <script>
-  import { Route } from 'svelte-router-spa';
-
   export let currentRoute;
   export let params;
+  
+  import { Route } from 'svelte-router-spa';
 </script>
 
 <div class="headerless-layout">
