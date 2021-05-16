@@ -90,6 +90,7 @@
     background-color: var(--mdc-theme-secondary, hsl(0, 0%, 15%));
     color: var(--mdc-theme-on-secondary, #fff);
     border-bottom: 1px solid hsl(0, 0%, 20%);
+    z-index: 999;
   }
 
   nav {
@@ -116,9 +117,7 @@
   }
 
   .main {
-    //background-color: blue;
     max-width: $max-width;
     margin: 0 auto;
-    //height: 1000px;
   }
 </style>
