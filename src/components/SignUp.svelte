@@ -1,14 +1,14 @@
 <script lang="ts">
   export let currentRoute;
   export let params;
-  
+
   import Textfield from '@smui/textfield/styled';
   import HelperText from '@smui/textfield/helper-text/styled';
   import Button, { Label } from '@smui/button/styled';
   import Paper, { Title, Content } from '@smui/paper/styled';
   import Snackbar, { Actions } from '@smui/snackbar/styled';
   import IconButton from '@smui/icon-button/styled';
-  import { navigateTo } from 'svelte-router-spa'
+  import { navigateTo } from 'svelte-router-spa';
   import axios from 'axios';
 
   const requestUrl = 'http://localhost:9999/api/v1';
@@ -124,7 +124,11 @@
       </div>
       <div class="btn">
         Уже есть аккаунт?
-        <Button variant="raised" color="secondary">
+        <Button
+          variant="raised"
+          color="secondary"
+          on:click={() => navigateTo('signin')}
+        >
           <Label>Войти</Label>
         </Button>
       </div>

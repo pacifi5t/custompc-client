@@ -25,14 +25,14 @@
       }
     });
     console.log(res);
-    if (res.data.length == 0) {
+    if (res.data == "") {
       snackbarNoUser.open();
       return;
     }
 
     let date = new Date();
     date.setDate(date.getDate() + 28);
-    
+
     setCookie('uid', res.data[0], date);
     setCookie('uname', res.data[1], date);
     setCookie('urole', res.data[2], date);
@@ -66,6 +66,17 @@
       <Button variant="raised" style="margin: 10px;" on:click={signIn}>
         <Label>Войти</Label>
       </Button>
+
+      <div class="btn">
+        Нет аккаунта?
+        <Button
+          variant="raised"
+          color="secondary"
+          on:click={() => navigateTo('signup')}
+        >
+          <Label>Зарегистрироваться</Label>
+        </Button>
+      </div>
     </Content>
   </Paper>
 
@@ -76,3 +87,9 @@
     </Actions>
   </Snackbar>
 </div>
+
+<style>
+  .btn {
+    margin: 10px;
+  }
+</style>

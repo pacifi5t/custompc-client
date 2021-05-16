@@ -21,7 +21,7 @@
 </script>
 
 <div>
-  <div class="wrapper">
+  <div class="nav-wrapper">
     <nav>
       <div class="logo"><Navigate to="/">CustomPC</Navigate></div>
       <div class="nav-item"><Navigate to="custom">СБОРКИ</Navigate></div>
@@ -84,7 +84,7 @@
   $nav-height: 3em;
   $max-width: 1200px;
 
-  .wrapper {
+  .nav-wrapper {
     width: 100%;
     position: fixed;
     background-color: var(--mdc-theme-secondary, hsl(0, 0%, 15%));
@@ -116,9 +116,9 @@
   }
 
   .main {
-    background-color: blue;
+    //background-color: blue;
     max-width: $max-width;
     margin: 0 auto;
-    height: 1000px;
+    //height: 1000px;
   }
 </style>

@@ -72,7 +72,7 @@ export default {
         [
           "sass",
           {
-            includePaths: ["src/theme", "node_modules"],
+            includePaths: ["src/theme/dark", "node_modules"],
           },
         ],
       ],

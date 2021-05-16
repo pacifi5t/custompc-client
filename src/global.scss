@@ -26,3 +26,22 @@ body {
   width: 20em;
   margin-bottom: 10px;
 }
+
+.nav-item a,
+.logo a {
+  text-decoration: none;
+  outline: none;
+  color: hsl(0, 0%, 75%);
+}
+
+.logo a {
+  color: white;
+}
+
+.nav-item a:visited {
+  color: hsl(0, 0%, 75%);
+}
+
+.nav-item a:hover {
+  color: hsl(0, 0%, 90%);
+}
