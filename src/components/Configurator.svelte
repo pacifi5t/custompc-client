@@ -47,25 +47,28 @@
 
   async function finishBuild() {
     console.log(selected);
-    let str = '';
+    let json = '{\n';
     let sum = 0;
     for (const elem of parts) {
       const part = findPartByName(selected[elem.type]);
-      str += elem.label + ' - ' + part.name + '\n';
+      json += `"${elem.type}"` + ': ' + `"${part.id}"` + ',\n';
       sum += part.price;
     }
+    json = json.slice(0, json.length - 2) + '\n}';
     console.log(name);
-    console.log(str);
+    console.log(json);
     console.log(sum);
     const uid = getCookie('uid');
     console.log(uid);
     
     const result = await axios.post(requestUrl + '/custombuilds', {
       authorId: uid,
+      name: name,
       price: sum,
       warranty: 2,
       image: '',
-      status: 'relevant'
+      status: 'relevant',
+      parts: json
     });
     console.log(result);
   }
@@ -107,7 +110,8 @@
 <Paper style="margin-top: 20px;">
   <Title>Конфигуратор</Title>
   <Content>
-    <Textfield
+    <div style="width: 50%;">
+      <Textfield
       style="width: 20em"
       variant="standard"
       bind:value={name}
@@ -139,6 +143,8 @@
     </Group>
 
     <Button on:click={finishBuild}>Оформить заказ</Button>
+    </div>
+    
   </Content>
 </Paper>
 <!-- 

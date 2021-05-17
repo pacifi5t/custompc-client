@@ -3,6 +3,7 @@
   export let params;
 
   const requestUrl = 'http://localhost:9999/api/v1';
+  const ps = ['cpu', 'mb', 'ram', 'gpu', 'storage', 'psu', 'cooling', 'case'];
 
   import { Route, Navigate, navigateTo } from 'svelte-router-spa';
   import Textfield from '@smui/textfield/styled';
@@ -24,12 +25,45 @@
     ActionButtons,
     ActionIcons
   } from '@smui/card/styled';
+  //import { jsPDF } from "jspdf";
 
-  let clicked = 0;
+  async function getBuilds() {
+    const result = await axios.get(requestUrl + '/custombuilds/info');
+    return result.data[0];
+  }
+
+  /*async function printToPdf(id: string, name: string) {
+    const result = await axios.get(
+      'http://localhost:9999/builds/' + name + '.json'
+    );
+    console.log(result.data);
+    const doc = new jsPDF();
+
+    for (const elem of ps) {
+      const res = await axios.get(requestUrl + '/parts',{
+        params: {
+          id: result.data[elem]
+        }
+      });
+      console.log(res);
+      const str = elem + ' - ' + res.data.name;
+      doc.text(str, 10, 10);
+    }
+    doc.save('build.pdf');
+  }*/
+
+  let builds = [];
+
+  getBuilds()
+    .then((v) => {
+      builds = v;
+      console.log(builds);
+    })
+    .catch((e) => console.error(e));
 </script>
 
 <LayoutGrid>
-  {#each Array(9) as _unused, i}
+  {#each builds as build, i}
     <Cell>
       <Card>
         <PrimaryAction>
@@ -40,10 +74,14 @@
           />
           <Content class="mdc-typography--body2">
             <h2 class="mdc-typography--headline6" style="margin: 0 10px;">
-              Типа сборка
+              {build.name}
             </h2>
-            <h3 class="mdc-typography--subtitle2" id="price">Типа цена</h3>
-            <h3 class="mdc-typography--subtitle2" id="author">Типа автор</h3>
+            <h3 class="mdc-typography--subtitle2" id="price">
+              {build.price} $
+            </h3>
+            <h3 class="mdc-typography--subtitle2" id="author">
+              {build.username}
+            </h3>
           </Content>
         </PrimaryAction>
         <Actions>
@@ -52,7 +90,7 @@
               <Label>Купить</Label>
             </Button>
             <Button>
-              <Label>Оценить</Label>
+              <Label>PDF</Label>
             </Button>
           </ActionButtons>
         </Actions>
@@ -61,21 +99,10 @@
   {/each}
 </LayoutGrid>
 
-<pre class="status">Clicked: {clicked}</pre>
-
 <style>
-  /** :global(.demo-cell) {
-    height: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--mdc-theme-secondary, #333);
-    color: var(--mdc-theme-on-secondary, #fff);
-  }*/
-
   #price,
   #author {
-    margin-top: 5px;
+    margin-top: 10px;
     margin-left: 10px;
     color: #888;
   }
