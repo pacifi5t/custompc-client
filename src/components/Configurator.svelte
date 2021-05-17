@@ -51,7 +51,7 @@
     let sum = 0;
     for (const elem of parts) {
       const part = findPartByName(selected[elem.type]);
-      json += `"${elem.type}"` + ': ' + `"${part.id}"` + ',\n';
+      json += `"${elem.type}"` + ': ' + `"${part.name}"` + ',\n';
       sum += part.price;
     }
     json = json.slice(0, json.length - 2) + '\n}';

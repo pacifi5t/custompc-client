@@ -32,6 +32,14 @@
     return result.data[0];
   }
 
+  async function remove(id: string) {
+    console.log(id);
+    const result = await axios.delete(requestUrl + '/custombuilds', {
+      params: {
+        id: id
+      }
+    });
+  }
   /*async function printToPdf(id: string, name: string) {
     const result = await axios.get(
       'http://localhost:9999/builds/' + name + '.json'
@@ -92,6 +100,11 @@
             <Button>
               <Label>PDF</Label>
             </Button>
+            {#if getCookie('uname') === 'pacifi5t'}
+              <Button on:click={remove(build.id)}>
+                <Label>Удалить</Label>
+              </Button>
+            {/if}
           </ActionButtons>
         </Actions>
       </Card>
