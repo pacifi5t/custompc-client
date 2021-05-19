@@ -25,40 +25,20 @@
     ActionButtons,
     ActionIcons
   } from '@smui/card/styled';
-  //import { jsPDF } from "jspdf";
 
   async function getBuilds() {
-    const result = await axios.get(requestUrl + '/custombuilds/info');
-    return result.data[0];
+    const result = await axios.get(requestUrl + '/custombuilds/all');
+    return result.data;
   }
 
   async function remove(id: string) {
-    console.log(id);
     const result = await axios.delete(requestUrl + '/custombuilds', {
       params: {
         id: id
       }
     });
+    console.log(result);
   }
-  /*async function printToPdf(id: string, name: string) {
-    const result = await axios.get(
-      'http://localhost:9999/builds/' + name + '.json'
-    );
-    console.log(result.data);
-    const doc = new jsPDF();
-
-    for (const elem of ps) {
-      const res = await axios.get(requestUrl + '/parts',{
-        params: {
-          id: result.data[elem]
-        }
-      });
-      console.log(res);
-      const str = elem + ' - ' + res.data.name;
-      doc.text(str, 10, 10);
-    }
-    doc.save('build.pdf');
-  }*/
 
   let builds = [];
 
@@ -76,7 +56,7 @@
       <Card>
         <PrimaryAction>
           <img
-            src="https://memepedia.ru/wp-content/uploads/2019/11/15655259183450.jpg"
+            src="https://s3.amazonaws.com/digitaltrends-uploads-prod/2016/01/PC-case.jpg"
             style="width: 400px; height:300px"
             alt="Много в мире разных брендов..."
           />

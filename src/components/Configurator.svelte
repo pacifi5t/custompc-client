@@ -19,17 +19,17 @@
   class Part {
     label: string;
     type: string;
-    value = [];
+    array = [];
     constructor(label: string, type: string) {
       this.label = label;
       this.type = type;
     }
   }
 
-  function findPartByName(name: string) {
+  function findPartById(id: string) {
     for (const part of parts) {
-      for (const elem of part.value) {
-        if(name == elem.name) {
+      for (const elem of part.array) {
+        if (id == elem.id) {
           return elem;
         }
       }
@@ -46,35 +46,28 @@
   }
 
   async function finishBuild() {
-    console.log(selected);
-    let json = '{\n';
     let sum = 0;
+    let arr = [];
+
     for (const elem of parts) {
-      const part = findPartByName(selected[elem.type]);
-      json += `"${elem.type}"` + ': ' + `"${part.name}"` + ',\n';
+      const part = findPartById(selected[elem.type]);
+      arr.push(part.id);
       sum += part.price;
     }
-    json = json.slice(0, json.length - 2) + '\n}';
-    console.log(name);
-    console.log(json);
-    console.log(sum);
-    const uid = getCookie('uid');
-    console.log(uid);
-    
+
     const result = await axios.post(requestUrl + '/custombuilds', {
-      authorId: uid,
+      authorId: getCookie('uid'),
       name: name,
       price: sum,
       warranty: 2,
       image: '',
       status: 'relevant',
-      parts: json
+      parts: arr
     });
     console.log(result);
   }
 
   let name = '';
-
   let parts = [
     new Part('Процессор', 'cpu'),
     new Part('Материнская плата', 'mb'),
@@ -85,7 +78,6 @@
     new Part('Охлаждение', 'cooling'),
     new Part('Корпус', 'case')
   ];
-
   let selected = {
     cpu: '',
     mb: '',
@@ -99,12 +91,11 @@
 
   for (let i = 0; i < parts.length; i++) {
     getParts(parts[i].type)
-      .then((v) => {
-        parts[i].value = v;
+      .then((val) => {
+        parts[i].array = val;
       })
       .catch((e) => console.error(e));
   }
-  console.log(parts);
 </script>
 
 <Paper style="margin-top: 20px;">
@@ -112,39 +103,38 @@
   <Content>
     <div style="width: 50%;">
       <Textfield
-      style="width: 20em"
-      variant="standard"
-      bind:value={name}
-      label="Имя сборки"
-      required
-    >
-      <HelperText slot="helper">Назовите свое творение</HelperText>
-    </Textfield>
+        style="width: 20em"
+        variant="standard"
+        bind:value={name}
+        label="Имя сборки"
+        required
+      >
+        <HelperText slot="helper">Назовите свое творение</HelperText>
+      </Textfield>
 
-    <Group>
-      {#each parts as type, i}
-        <Subheader style="margin-top: 40px;">{type.label}</Subheader>
-        <List class="bordered">
-          {#each type.value as part}
-            <Item class="bordered">
-              <Text>{part.name}</Text>
-              <Meta>
-                <!-- <Checkbox bind:checked={selected[type.type]} value={part.name} /> -->
-                <Radio
-                  color="primary"
-                  bind:group={selected[type.type]}
-                  value={part.name}
-                />
-              </Meta>
-            </Item>
-          {/each}
-        </List>
-      {/each}
-    </Group>
+      <Group>
+        {#each parts as partType, i}
+          <Subheader style="margin-top: 40px;">{partType.label}</Subheader>
+          <List class="bordered">
+            {#each partType.array as part}
+              <Item class="bordered">
+                <Text>{part.name}</Text>
+                <Meta>
+                  <!-- <Checkbox bind:checked={selected[type.type]} value={part.name} /> -->
+                  <Radio
+                    color="primary"
+                    bind:group={selected[partType.type]}
+                    value={part.id}
+                  />
+                </Meta>
+              </Item>
+            {/each}
+          </List>
+        {/each}
+      </Group>
 
-    <Button on:click={finishBuild}>Оформить заказ</Button>
+      <Button on:click={finishBuild}>Оформить заказ</Button>
     </div>
-    
   </Content>
 </Paper>
 <!-- 
