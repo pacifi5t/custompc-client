@@ -39,11 +39,21 @@
     .catch((err) => console.error(err));
   }
 
-  /*async function addToOrderList(id: string) {
-    const result = await axios.post(requestUrl + '/items', {
-      
+  async function addToOrderList(id: string) {
+    const resCart = await axios.get(requestUrl + '/users/cart', {
+      params: {
+        id: getCookie('uid')
+      }
     })
-  }*/
+
+    const result = await axios.post(requestUrl + '/items', {
+      cartId: resCart.data[0].id,
+      buildId: id,
+      quantity: 1,
+      buildType: 'Custom'
+    })
+    console.log(result);
+  }
 
   async function remove(id: string) {
     const result = await axios.delete(requestUrl + '/custombuilds', {

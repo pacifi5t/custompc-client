@@ -30,7 +30,7 @@
       return;
     }
 
-    const result = await axios.get(requestUrl + '/users/cart', {
+    const result = await axios.get(requestUrl + '/users/cart/content', {
       params: {
         id: uid
       }
@@ -53,7 +53,6 @@
           }
         });
       }
-      console.log(res);
       orders = [...orders, res.data];
     }
     console.log(orders);
@@ -84,7 +83,6 @@
           <Navigate to="signup">Зарегистрироваться</Navigate>
         </div>
       {/if}
-      
     </nav>
   </div>
   <div class="empty" />
@@ -101,15 +99,22 @@
   <Title id="simple-title">Корзина</Title>
   <Content id="simple-content">
     <DataTable table$aria-label="People list" style="max-width: 100%;">
+      <Head>
+        <Row>
+          <Cell>Название сборки</Cell>
+          <Cell>Цена</Cell>
+          <Cell>Гарантия</Cell>
+        </Row>
+      </Head>
       <Body>
-          {#each parsedOrders as order}
-            <Row>
-              <Cell>{order.name}</Cell>
-              <Cell>{order.price}</Cell>
-              <Cell numeric>{order.warranty}</Cell>
-              <Cell><IconButton class="material-icons">close</IconButton></Cell>
-            </Row>
-          {/each}
+        {#each parsedOrders as order}
+          <Row>
+            <Cell>{order.name}</Cell>
+            <Cell>{order.price}</Cell>
+            <Cell numeric>{order.warranty}</Cell>
+            <Cell><IconButton class="material-icons">close</IconButton></Cell>
+          </Row>
+        {/each}
       </Body>
     </DataTable>
   </Content>
