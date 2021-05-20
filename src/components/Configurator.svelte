@@ -27,7 +27,7 @@
   }
 
   function findPartById(id: string, where: Array<any>) {
-    for (const part of allParts) {
+    for (const part of where) {
       for (const elem of part.array) {
         if (id == elem.id) {
           return elem;
@@ -84,7 +84,6 @@
     new Part('Корпус', 'case')
   ];
   const partArrayTypes = [new Part('Накопители', 'storage')];
-  const allParts = [...partTypes, ...partArrayTypes];
 
   //Bound variables
   let summaryPrice = 0;
@@ -108,14 +107,14 @@
       .then((val) => {
         partTypes[i].array = val;
       })
-      .catch((e) => console.error(e));
+      .catch((err) => console.error(err));
   }
   for (let i = 0; i < partArrayTypes.length; i++) {
     getParts(partArrayTypes[i].type)
       .then((val) => {
         partArrayTypes[i].array = val;
       })
-      .catch((e) => console.error(e));
+      .catch((err) => console.error(err));
   }
 
   //Reactive summary price update

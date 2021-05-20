@@ -2,13 +2,18 @@
   export let currentRoute;
   export let params;
 
+  const requestUrl = 'http://localhost:9999/api/v1';
+
   import { Route, Navigate, navigateTo } from 'svelte-router-spa';
   import Button, { Label, Icon } from '@smui/button/styled';
   import IconButton from '@smui/icon-button/styled';
   import Dialog, { Title, Content, Actions } from '@smui/dialog/styled';
   import DataTable, { Head, Body, Row, Cell } from '@smui/data-table/styled';
   import { getCookie, removeCookie } from '../cookies';
+  import axios from 'axios';
 
+  let orders = [];
+  $: parsedOrders = orders;
   let open;
   let uname = getCookie('uname');
 
@@ -18,6 +23,43 @@
     removeCookie('token');
     uname = getCookie('uname');
   }
+
+  async function updateOrders() {
+    const uid = getCookie('uid');
+    if (uid === null || typeof uid === 'undefined') {
+      return;
+    }
+
+    const result = await axios.get(requestUrl + '/users/cart', {
+      params: {
+        id: uid
+      }
+    });
+
+    let temp = result.data;
+
+    for (const elem of temp) {
+      let res;
+      if (elem.custom_build_id !== null) {
+        res = await axios.get(requestUrl + '/custombuilds', {
+          params: {
+            id: elem.custom_build_id
+          }
+        });
+      } else {
+        res = await axios.get(requestUrl + '/companybuilds', {
+          params: {
+            id: elem.company_build_id
+          }
+        });
+      }
+      console.log(res);
+      orders = [...orders, res.data];
+    }
+    console.log(orders);
+  }
+
+  updateOrders();
 </script>
 
 <div>
@@ -42,7 +84,7 @@
           <Navigate to="signup">Зарегистрироваться</Navigate>
         </div>
       {/if}
-
+      
     </nav>
   </div>
   <div class="empty" />
@@ -60,13 +102,14 @@
   <Content id="simple-content">
     <DataTable table$aria-label="People list" style="max-width: 100%;">
       <Body>
-        <!-- This must be in cycle after creating a build is implemented -->
-        <Row>
-          <Cell>Steve</Cell>
-          <Cell>Red</Cell>
-          <Cell numeric>45</Cell>
-          <Cell><IconButton class="material-icons">close</IconButton></Cell>
-        </Row>
+          {#each parsedOrders as order}
+            <Row>
+              <Cell>{order.name}</Cell>
+              <Cell>{order.price}</Cell>
+              <Cell numeric>{order.warranty}</Cell>
+              <Cell><IconButton class="material-icons">close</IconButton></Cell>
+            </Row>
+          {/each}
       </Body>
     </DataTable>
   </Content>

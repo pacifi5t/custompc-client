@@ -31,6 +31,20 @@
     return result.data;
   }
 
+  async function updateBuilds() {
+    getBuilds()
+    .then((val) => {
+      builds = val;
+    })
+    .catch((err) => console.error(err));
+  }
+
+  /*async function addToOrderList(id: string) {
+    const result = await axios.post(requestUrl + '/items', {
+      
+    })
+  }*/
+
   async function remove(id: string) {
     const result = await axios.delete(requestUrl + '/custombuilds', {
       params: {
@@ -38,20 +52,18 @@
       }
     });
     console.log(result);
+    updateBuilds();
   }
 
-  let builds = [];
+  $: builds = [];
 
-  getBuilds()
-    .then((v) => {
-      builds = v;
-      console.log(builds);
-    })
-    .catch((e) => console.error(e));
+  updateBuilds();
+  
+
 </script>
 
 <LayoutGrid>
-  {#each builds as build, i}
+  {#each builds as build}
     <Cell>
       <Card>
         <PrimaryAction>
@@ -74,13 +86,13 @@
         </PrimaryAction>
         <Actions>
           <ActionButtons>
-            <Button>
+            <Button on:click={addToOrderList(build.id)}>
               <Label>Купить</Label>
             </Button>
             <Button>
               <Label>PDF</Label>
             </Button>
-            {#if getCookie('uname') === 'pacifi5t'}
+            {#if getCookie('urole') === 'admin'}
               <Button on:click={remove(build.id)}>
                 <Label>Удалить</Label>
               </Button>
