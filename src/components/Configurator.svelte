@@ -4,6 +4,27 @@
 
   let snackbarNotAllParts;
   const requestUrl = 'http://localhost:9999/api/v1';
+  const warrantyOptions = [
+    {
+      label: 'Стандартная (1 год)',
+      value: 1
+    },
+    {
+      label: 'Расширенная (3 года)',
+      value: 3
+    }
+  ];
+
+  const testingOptions = [
+    {
+      label: 'Стандартное (входит в стоимоссть)',
+      value: 0
+    },
+    {
+      label: 'Дополнительные тесты на надежность',
+      value: 200
+    }
+  ]
 
   import { Route, Navigate, navigateTo } from 'svelte-router-spa';
   import Textfield from '@smui/textfield/styled';
@@ -41,7 +62,7 @@
 
   function findOsByName(name: string) {
     for (const o of oss) {
-      if(name === o.name) {
+      if (name === o.name) {
         return o;
       }
     }
@@ -67,7 +88,7 @@
 
   async function finishBuild() {
     console.log(selectedOs);
-    
+
     let arr = [];
     try {
       for (const elem of partTypes) {
@@ -91,8 +112,8 @@
     const result = await axios.post(requestUrl + '/custombuilds', {
       authorId: getCookie('uid'),
       name: name,
-      price: summaryPrice,
-      warranty: 2,
+      price: buildPrice,
+      warranty: warranty,
       status: 'relevant',
       parts: arr,
       soft: [findOsByName(selectedOs).id]
@@ -114,6 +135,7 @@
   let oss = [];
 
   //Bound variables
+  let buildPrice = 0;
   let summaryPrice = 0;
   let name = '';
   let selectedParts = {
@@ -128,7 +150,9 @@
   let selectedPartArrays = {
     storage: []
   };
-  let selectedOs = 'Без ОС';
+  let selectedOs = '';
+  let warranty = 0;
+  let testingCost = 0;
 
   //Init maps
   for (let i = 0; i < partTypes.length; i++) {
@@ -153,11 +177,12 @@
 
   //Reactive summary price update
   $: {
-    summaryPrice = 0;
+    buildPrice = 0;
+    
     for (const elem of partTypes) {
       const part = findPartById(selectedParts[elem.type], partTypes);
       if (typeof part !== 'undefined') {
-        summaryPrice += part.price;
+        buildPrice += part.price;
       }
     }
 
@@ -167,19 +192,24 @@
         for (const subElem of array) {
           const part = findPartById(subElem, partArrayTypes);
           if (typeof part !== 'undefined') {
-            summaryPrice += part.price;
+            buildPrice += part.price;
           }
         }
       }
     }
 
     let o = findOsByName(selectedOs);
-    
+
     if (typeof o !== 'undefined') {
-      summaryPrice += o.price;
+      buildPrice += o.price;
+    }
+
+    summaryPrice = buildPrice * 1.25 + testingCost;
+
+    if(warranty > 1) {
+      summaryPrice += 200;
     }
   }
-  
 </script>
 
 <Paper style="margin-top: 20px;">
@@ -240,15 +270,30 @@
           {/each}
         </Group>
 
-        <Button on:click={finishBuild}>Оформить заказ</Button>
+        <Button style="margin: 20px 0;" on:click={finishBuild}
+          >Сохранить сборку</Button
+        >
       </div>
       <div class="half-page">
-        <h2>Цена сборки: {summaryPrice} $</h2>
-        <Select bind:value={selectedOs} label="Select Menu">
-          {#each oss as o}
-            <Option value={o.name}>{o.name}</Option>
-          {/each}
-        </Select>
+        <div style="display: flex; flex-direction: column;">
+          <Select bind:value={selectedOs} label="Предустановленная ОС" class="global-select" required>
+            {#each oss as o}
+              <Option value={o.name}>{o.name}</Option>
+            {/each}
+          </Select>
+          <Select bind:value={warranty} label="Гарантия" class="global-select" required>
+            {#each warrantyOptions as o}
+              <Option value={o.value}>{o.label}</Option>
+            {/each}
+          </Select>
+          <Select bind:value={testingCost} label="Тестирование" class="global-select" required>
+            {#each testingOptions as o}
+              <Option value={o.value}>{o.label}</Option>
+            {/each}
+          </Select>
+        </div>
+        <h2>Себестоимость сборки: {buildPrice} $</h2>
+        <h2>Полная цена: {summaryPrice} $</h2>
       </div>
     </div>
   </Content>
