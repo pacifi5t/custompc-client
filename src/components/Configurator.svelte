@@ -2,6 +2,7 @@
   export let currentRoute;
   export let params;
 
+  let snackbarNotAllParts;
   const requestUrl = 'http://localhost:9999/api/v1';
 
   import { Route, Navigate, navigateTo } from 'svelte-router-spa';
@@ -10,7 +11,9 @@
   import Button, { Label, Icon } from '@smui/button/styled';
   import IconButton from '@smui/icon-button/styled';
   import List, { Item, Text, Group, Subheader, Meta } from '@smui/list/styled';
+  import Select, { Option } from '@smui/select/styled';
   import Checkbox from '@smui/checkbox/styled';
+  import Snackbar, { Actions } from '@smui/snackbar/styled';
   import Radio from '@smui/radio/styled';
   import Paper, { Title, Content } from '@smui/paper/styled';
   import { getCookie, removeCookie } from '../cookies';
@@ -36,6 +39,23 @@
     }
   }
 
+  function findOsByName(name: string) {
+    for (const o of oss) {
+      if(name === o.name) {
+        return o;
+      }
+    }
+  }
+
+  async function getOs() {
+    const result = await axios.get(requestUrl + '/software/type', {
+      params: {
+        type: 'os'
+      }
+    });
+    oss = result.data;
+  }
+
   async function getParts(type: string) {
     const result = await axios.get(requestUrl + '/parts/type', {
       params: {
@@ -46,19 +66,26 @@
   }
 
   async function finishBuild() {
+    console.log(selectedOs);
+    
     let arr = [];
-
-    for (const elem of partTypes) {
-      const part = findPartById(selectedParts[elem.type], partTypes);
-      arr.push(part.id);
-    }
-
-    for (const elem of partArrayTypes) {
-      const array = selectedPartArrays[elem.type];
-      for (const subElem of array) {
-        const part = findPartById(subElem, partArrayTypes);
+    try {
+      for (const elem of partTypes) {
+        const part = findPartById(selectedParts[elem.type], partTypes);
         arr.push(part.id);
       }
+
+      for (const elem of partArrayTypes) {
+        const array = selectedPartArrays[elem.type];
+        for (const subElem of array) {
+          const part = findPartById(subElem, partArrayTypes);
+          arr.push(part.id);
+        }
+      }
+    } catch (err) {
+      //console.error(err);
+      snackbarNotAllParts.open();
+      return;
     }
 
     const result = await axios.post(requestUrl + '/custombuilds', {
@@ -66,9 +93,9 @@
       name: name,
       price: summaryPrice,
       warranty: 2,
-      image: '',
       status: 'relevant',
-      parts: arr
+      parts: arr,
+      soft: [findOsByName(selectedOs).id]
     });
     console.log(result);
   }
@@ -84,6 +111,7 @@
     new Part('Корпус', 'case')
   ];
   const partArrayTypes = [new Part('Накопители', 'storage')];
+  let oss = [];
 
   //Bound variables
   let summaryPrice = 0;
@@ -100,6 +128,7 @@
   let selectedPartArrays = {
     storage: []
   };
+  let selectedOs = 'Без ОС';
 
   //Init maps
   for (let i = 0; i < partTypes.length; i++) {
@@ -107,15 +136,20 @@
       .then((val) => {
         partTypes[i].array = val;
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        //console.error(err);
+      });
   }
   for (let i = 0; i < partArrayTypes.length; i++) {
     getParts(partArrayTypes[i].type)
       .then((val) => {
         partArrayTypes[i].array = val;
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        //console.error(err);
+      });
   }
+  getOs();
 
   //Reactive summary price update
   $: {
@@ -138,7 +172,14 @@
         }
       }
     }
+
+    let o = findOsByName(selectedOs);
+    
+    if (typeof o !== 'undefined') {
+      summaryPrice += o.price;
+    }
   }
+  
 </script>
 
 <Paper style="margin-top: 20px;">
@@ -187,6 +228,13 @@
                     />
                   </Meta>
                 </Item>
+                <!-- {#if selectedPartArrays[partType.type].toString().search(part.id) !== -1}
+                <div style="display: flex;">
+                  <IconButton class="material-icons" on:click={() => {}}>add</IconButton>
+                  <Text style="padding: 10px; font-size: 24px;" >4</Text>
+                  <IconButton class="material-icons" on:click={() => {}}>remove</IconButton>
+                </div>
+                {/if} -->
               {/each}
             </List>
           {/each}
@@ -196,10 +244,22 @@
       </div>
       <div class="half-page">
         <h2>Цена сборки: {summaryPrice} $</h2>
+        <Select bind:value={selectedOs} label="Select Menu">
+          {#each oss as o}
+            <Option value={o.name}>{o.name}</Option>
+          {/each}
+        </Select>
       </div>
     </div>
   </Content>
 </Paper>
+
+<Snackbar bind:this={snackbarNotAllParts}>
+  <Label>Не все комплектующие выбраны</Label>
+  <Actions>
+    <IconButton class="material-icons" title="Dismiss">close</IconButton>
+  </Actions>
+</Snackbar>
 
 <style>
   .half-page {

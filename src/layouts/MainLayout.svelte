@@ -21,10 +21,12 @@
     removeCookie('uname');
     removeCookie('uid');
     removeCookie('token');
+    removeCookie('urole');
     uname = getCookie('uname');
   }
 
   async function updateOrders() {
+    orders = [];
     const uid = getCookie('uid');
     if (uid === null || typeof uid === 'undefined') {
       return;
@@ -73,7 +75,13 @@
 
       {#if uname !== undefined}
         <div class="nav-item"><Navigate to="user">{uname}</Navigate></div>
-        <IconButton class="material-icons" on:click={() => (open = true)}>
+        <IconButton
+          class="material-icons"
+          on:click={ async () => {
+            await updateOrders();
+            open = true;
+          }}
+        >
           shopping_basket
         </IconButton>
         <IconButton class="material-icons" on:click={logOut}>logout</IconButton>

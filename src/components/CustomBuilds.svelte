@@ -3,7 +3,6 @@
   export let params;
 
   const requestUrl = 'http://localhost:9999/api/v1';
-  const ps = ['cpu', 'mb', 'ram', 'gpu', 'storage', 'psu', 'cooling', 'case'];
 
   import { Route, Navigate, navigateTo } from 'svelte-router-spa';
   import Textfield from '@smui/textfield/styled';
@@ -17,6 +16,7 @@
   import Paper, { Title, Content } from '@smui/paper/styled';
   import { getCookie, removeCookie } from '../cookies';
   import axios from 'axios';
+  import { createEventDispatcher } from 'svelte';
   import Card, {
     PrimaryAction,
     Media,
@@ -36,16 +36,18 @@
     .then((val) => {
       builds = val;
     })
-    .catch((err) => console.error(err));
+    .catch((err) => {
+      //console.error(err);
+    });
   }
 
-  async function addToOrderList(id: string) {
+  async function addToCartList(id: string) {
     const resCart = await axios.get(requestUrl + '/users/cart', {
       params: {
         id: getCookie('uid')
       }
     })
-
+    
     const result = await axios.post(requestUrl + '/items', {
       cartId: resCart.data[0].id,
       buildId: id,
@@ -96,11 +98,8 @@
         </PrimaryAction>
         <Actions>
           <ActionButtons>
-            <Button on:click={addToOrderList(build.id)}>
+            <Button on:click={addToCartList(build.id)}>
               <Label>Купить</Label>
-            </Button>
-            <Button>
-              <Label>PDF</Label>
             </Button>
             {#if getCookie('urole') === 'admin'}
               <Button on:click={remove(build.id)}>
