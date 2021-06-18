@@ -4,29 +4,18 @@
 
   let snackbarNotAllParts;
   const requestUrl = 'http://localhost:9999/api/v1';
+  const isTypeCreate = currentRoute.namedParams.type === 'create';
+
   const warrantyOptions = [
-    {
-      label: 'Стандартная (1 год)',
-      value: 1
-    },
-    {
-      label: 'Расширенная (3 года)',
-      value: 3
-    }
+    { label: 'Стандартная (1 год)', value: 1 },
+    { label: 'Расширенная (3 года)', value: 3 }
   ];
 
   const testingOptions = [
-    {
-      label: 'Стандартное (входит в стоимоссть)',
-      value: 0
-    },
-    {
-      label: 'Дополнительные тесты на надежность',
-      value: 200
-    }
-  ]
+    { label: 'Стандартное (входит в стоимость)', value: 0 },
+    { label: 'Дополнительные тесты на надежность', value: 200 }
+  ];
 
-  import { Route, Navigate, navigateTo } from 'svelte-router-spa';
   import Textfield from '@smui/textfield/styled';
   import HelperText from '@smui/textfield/helper-text/styled';
   import Button, { Label, Icon } from '@smui/button/styled';
@@ -37,7 +26,7 @@
   import Snackbar, { Actions } from '@smui/snackbar/styled';
   import Radio from '@smui/radio/styled';
   import Paper, { Title, Content } from '@smui/paper/styled';
-  import { getCookie, removeCookie } from '../cookies';
+  import { getCookie } from '../cookies';
   import axios from 'axios';
 
   class Part {
@@ -87,8 +76,6 @@
   }
 
   async function finishBuild() {
-    console.log(selectedOs);
-
     let arr = [];
     try {
       for (const elem of partTypes) {
@@ -154,6 +141,7 @@
   let warranty = 0;
   let testingCost = 0;
 
+  console.log(currentRoute);
   //Init maps
   for (let i = 0; i < partTypes.length; i++) {
     getParts(partTypes[i].type)
@@ -178,7 +166,7 @@
   //Reactive summary price update
   $: {
     buildPrice = 0;
-    
+
     for (const elem of partTypes) {
       const part = findPartById(selectedParts[elem.type], partTypes);
       if (typeof part !== 'undefined') {
@@ -206,14 +194,22 @@
 
     summaryPrice = buildPrice * 1.25 + testingCost;
 
-    if(warranty > 1) {
+    if (warranty > 1) {
       summaryPrice += 200;
     }
+  }
+
+  if (isTypeCreate) {
   }
 </script>
 
 <Paper style="margin-top: 20px;">
-  <Title>Конфигуратор</Title>
+  {#if isTypeCreate}
+    <Title>Конфигуратор</Title>
+  {:else}
+    <Title>Редактирование сборки</Title>
+  {/if}
+
   <Content>
     <div style="display: flex;">
       <div class="half-page">
@@ -276,17 +272,32 @@
       </div>
       <div class="half-page">
         <div style="display: flex; flex-direction: column;">
-          <Select bind:value={selectedOs} label="Предустановленная ОС" class="global-select" required>
+          <Select
+            bind:value={selectedOs}
+            label="Предустановленная ОС"
+            class="global-select"
+            required
+          >
             {#each oss as o}
               <Option value={o.name}>{o.name}</Option>
             {/each}
           </Select>
-          <Select bind:value={warranty} label="Гарантия" class="global-select" required>
+          <Select
+            bind:value={warranty}
+            label="Гарантия"
+            class="global-select"
+            required
+          >
             {#each warrantyOptions as o}
               <Option value={o.value}>{o.label}</Option>
             {/each}
           </Select>
-          <Select bind:value={testingCost} label="Тестирование" class="global-select" required>
+          <Select
+            bind:value={testingCost}
+            label="Тестирование"
+            class="global-select"
+            required
+          >
             {#each testingOptions as o}
               <Option value={o.value}>{o.label}</Option>
             {/each}

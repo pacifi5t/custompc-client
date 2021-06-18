@@ -69,7 +69,7 @@
       <div class="logo"><Navigate to="/">CustomPC</Navigate></div>
       <div class="nav-item"><Navigate to="custom">СБОРКИ</Navigate></div>
       <div class="nav-item">
-        <Navigate to="configurator">КОНФИГУРАТОР</Navigate>
+        <Navigate to="configurator/create">КОНФИГУРАТОР</Navigate>
       </div>
       <div style="flex-grow: 1;" />
 
