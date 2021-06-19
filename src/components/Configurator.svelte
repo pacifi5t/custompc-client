@@ -3,18 +3,6 @@
   export let params;
 
   let snackbarNotAllParts;
-  const requestUrl = 'http://localhost:9999/api/v1';
-  const isTypeCreate = currentRoute.namedParams.type === 'create';
-
-  const warrantyOptions = [
-    { label: 'Стандартная (1 год)', value: 1 },
-    { label: 'Расширенная (3 года)', value: 3 }
-  ];
-
-  const testingOptions = [
-    { label: 'Стандартное (входит в стоимость)', value: 0 },
-    { label: 'Дополнительные тесты на надежность', value: 200 }
-  ];
 
   import Textfield from '@smui/textfield/styled';
   import HelperText from '@smui/textfield/helper-text/styled';
@@ -27,47 +15,35 @@
   import Radio from '@smui/radio/styled';
   import Paper, { Title, Content } from '@smui/paper/styled';
   import { getCookie } from '../cookies';
+  import { requestUrl, Component } from '../utils';
   import axios from 'axios';
 
-  class Part {
-    label: string;
-    type: string;
-    array = [];
-    constructor(label: string, type: string) {
-      this.label = label;
-      this.type = type;
-    }
-  }
+  const isModeCreate = currentRoute.namedParams.mode === 'create';
 
-  function findPartById(id: string, where: Array<any>) {
-    for (const part of where) {
-      for (const elem of part.array) {
-        if (id == elem.id) {
-          return elem;
-        }
-      }
-    }
-  }
+  const hardware = new Map([
+    ['cpu', new Component('Процессор', true)],
+    ['mb', new Component('Материнская плата', true)],
+    ['ram', new Component('Оперативная память', true)],
+    ['gpu', new Component('Видеокарта', true)],
+    ['psu', new Component('Блок питания', true)],
+    ['storage', new Component('Накопители', false)],
+    ['cooling', new Component('Охлаждение', true)],
+    ['case', new Component('Корпус', true)]
+  ]);
+  const software = new Map([
+    ['os', new Component('Операционная система', true)]
+  ]);
+  const warrantyOptions = [
+    { label: 'Стандартная (1 год)', value: 1 },
+    { label: 'Расширенная (3 года)', value: 3 }
+  ];
+  const testingOptions = [
+    { label: 'Стандартное (входит в стоимость)', value: 0 },
+    { label: 'Дополнительные тесты на надежность', value: 200 }
+  ];
 
-  function findOsByName(name: string) {
-    for (const o of oss) {
-      if (name === o.name) {
-        return o;
-      }
-    }
-  }
-
-  async function getOs() {
-    const result = await axios.get(requestUrl + '/software/type', {
-      params: {
-        type: 'os'
-      }
-    });
-    oss = result.data;
-  }
-
-  async function getParts(type: string) {
-    const result = await axios.get(requestUrl + '/parts/type', {
+  async function getComponentByType(type: string, route: string) {
+    const result = await axios.get(requestUrl + route, {
       params: {
         type: type
       }
@@ -75,8 +51,24 @@
     return result.data;
   }
 
+  async function fillMap(map: Map<string, Component>, route: string) {
+    map.forEach((val, key) => {
+      getComponentByType(key, route)
+        .then((data) => {
+          data.forEach((element) => {
+            val.data.set(element.id, element);
+          });
+          hardwareArray = Array.from(hardware.entries());
+          softwareArray = Array.from(software.entries());
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    });
+  }
+
   async function finishBuild() {
-    let arr = [];
+    /*let arr = [];
     try {
       for (const elem of partTypes) {
         const part = findPartById(selectedParts[elem.type], partTypes);
@@ -105,64 +97,36 @@
       parts: arr,
       soft: [findOsByName(selectedOs).id]
     });
-    console.log(result);
+    console.log(result);*/
   }
 
-  //For displaying
-  const partTypes = [
-    new Part('Процессор', 'cpu'),
-    new Part('Материнская плата', 'mb'),
-    new Part('Оперативная память', 'ram'),
-    new Part('Видеокарта', 'gpu'),
-    new Part('Блок питания', 'psu'),
-    new Part('Охлаждение', 'cooling'),
-    new Part('Корпус', 'case')
-  ];
-  const partArrayTypes = [new Part('Накопители', 'storage')];
-  let oss = [];
-
-  //Bound variables
-  let buildPrice = 0;
-  let summaryPrice = 0;
   let name = '';
-  let selectedParts = {
+  let selectedHardware = {
     cpu: '',
     mb: '',
     ram: '',
     gpu: '',
     psu: '',
+    storage: [],
     cooling: '',
     case: ''
   };
-  let selectedPartArrays = {
-    storage: []
+  let selectedSoftware = {
+    os: ''
   };
-  let selectedOs = '';
+
+  let buildPrice = 0;
+  let summaryPrice = 0;
+  let testingPrice = 0;
   let warranty = 0;
-  let testingCost = 0;
 
-  console.log(currentRoute);
-  //Init maps
-  for (let i = 0; i < partTypes.length; i++) {
-    getParts(partTypes[i].type)
-      .then((val) => {
-        partTypes[i].array = val;
-      })
-      .catch((err) => {
-        //console.error(err);
-      });
-  }
-  for (let i = 0; i < partArrayTypes.length; i++) {
-    getParts(partArrayTypes[i].type)
-      .then((val) => {
-        partArrayTypes[i].array = val;
-      })
-      .catch((err) => {
-        //console.error(err);
-      });
-  }
-  getOs();
+  let hardwareArray = Array.from(hardware.entries());
+  let softwareArray = Array.from(software.entries());
 
+  fillMap(hardware, '/parts/type');
+  fillMap(software, '/software/type');
+
+  /*
   //Reactive summary price update
   $: {
     buildPrice = 0;
@@ -197,14 +161,14 @@
     if (warranty > 1) {
       summaryPrice += 200;
     }
-  }
+  }*/
 
-  if (isTypeCreate) {
+  if (isModeCreate) {
   }
 </script>
 
 <Paper style="margin-top: 20px;">
-  {#if isTypeCreate}
+  {#if isModeCreate}
     <Title>Конфигуратор</Title>
   {:else}
     <Title>Редактирование сборки</Title>
@@ -224,43 +188,26 @@
         </Textfield>
 
         <Group>
-          {#each partTypes as partType}
-            <Subheader style="margin-top: 40px;">{partType.label}</Subheader>
+          {#each hardwareArray as [key, value]}
+            <Subheader style="margin-top: 40px;">{value.label}</Subheader>
             <List class="bordered">
-              {#each partType.array as part}
+              {#each Array.from(value.data.values()) as elem}
                 <Item class="bordered">
-                  <Text>{part.name}</Text>
+                  <Text>{elem.name}</Text>
                   <Meta>
-                    <Radio
-                      bind:group={selectedParts[partType.type]}
-                      value={part.id}
-                    />
+                    {#if value.onlyOne}
+                      <Radio
+                        bind:group={selectedHardware[key]}
+                        value={elem.id}
+                      />
+                    {:else}
+                      <Checkbox
+                        bind:group={selectedHardware[key]}
+                        value={elem.id}
+                      />
+                    {/if}
                   </Meta>
                 </Item>
-              {/each}
-            </List>
-          {/each}
-
-          {#each partArrayTypes as partType}
-            <Subheader style="margin-top: 40px;">{partType.label}</Subheader>
-            <List class="bordered">
-              {#each partType.array as part}
-                <Item class="bordered">
-                  <Text>{part.name}</Text>
-                  <Meta>
-                    <Checkbox
-                      bind:group={selectedPartArrays[partType.type]}
-                      value={part.id}
-                    />
-                  </Meta>
-                </Item>
-                <!-- {#if selectedPartArrays[partType.type].toString().search(part.id) !== -1}
-                <div style="display: flex;">
-                  <IconButton class="material-icons" on:click={() => {}}>add</IconButton>
-                  <Text style="padding: 10px; font-size: 24px;" >4</Text>
-                  <IconButton class="material-icons" on:click={() => {}}>remove</IconButton>
-                </div>
-                {/if} -->
               {/each}
             </List>
           {/each}
@@ -272,16 +219,16 @@
       </div>
       <div class="half-page">
         <div style="display: flex; flex-direction: column;">
-          <Select
-            bind:value={selectedOs}
+          <!--<Select
+            bind:value={selectedSoftware.os}
             label="Предустановленная ОС"
             class="global-select"
             required
           >
-            {#each oss as o}
-              <Option value={o.name}>{o.name}</Option>
+            {#each softwareArray as [key, value]}
+              <Option value={value.data[0].name}>{value.data[0].name}</Option>
             {/each}
-          </Select>
+          </Select>-->
           <Select
             bind:value={warranty}
             label="Гарантия"
@@ -293,7 +240,7 @@
             {/each}
           </Select>
           <Select
-            bind:value={testingCost}
+            bind:value={testingPrice}
             label="Тестирование"
             class="global-select"
             required
