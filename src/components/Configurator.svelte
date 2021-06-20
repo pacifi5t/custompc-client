@@ -52,6 +52,15 @@
     return result.data;
   }
 
+  async function fetchData(route: string) {
+    const result = await axios.get(requestUrl + route, {
+      params: {
+        id: currentRoute.namedParams.id
+      }
+    });
+    return result.data;
+  }
+
   async function fillMap(map: Map<string, Component>, route: string) {
     map.forEach((val, key) => {
       getComponentByType(key, route)
@@ -102,6 +111,28 @@
     console.log(result);
   }
 
+  async function updateFields() {
+    const totalInfo = await Promise.all([
+      fetchData('/custombuilds'),
+      fetchData('/custombuilds/parts'),
+      fetchData('/custombuilds/software')
+    ]);
+    console.log(totalInfo);
+    
+    name = totalInfo[0].name;
+    warranty = totalInfo[0].warranty;    
+    totalInfo[1].forEach((elem) => {
+      if(typeof selectedHardware[elem.type] === 'string') {
+        selectedHardware[elem.type] = elem.id;
+      } else {
+        selectedHardware[elem.type].push(elem.id); 
+      }
+    });
+    totalInfo[2].forEach((elem) => {
+      selectedSoftware[elem.type] = elem.id;
+    });
+  }
+
   let name = '';
   let selectedHardware = {
     cpu: '',
@@ -128,7 +159,8 @@
   fillMap(hardware, '/parts/type');
   fillMap(software, '/software/type');
 
-  if (isModeCreate) {
+  if (!isModeCreate) {
+    updateFields();
   }
 
   //Reactive summary price update
