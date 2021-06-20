@@ -128,44 +128,37 @@
   fillMap(hardware, '/parts/type');
   fillMap(software, '/software/type');
 
-  /*
+  if (isModeCreate) {
+  }
+
   //Reactive summary price update
   $: {
     buildPrice = 0;
 
-    for (const elem of partTypes) {
-      const part = findPartById(selectedParts[elem.type], partTypes);
-      if (typeof part !== 'undefined') {
-        buildPrice += part.price;
-      }
-    }
-
-    for (const elem of partArrayTypes) {
-      const array = selectedPartArrays[elem.type];
-      if (typeof array !== 'undefined') {
-        for (const subElem of array) {
-          const part = findPartById(subElem, partArrayTypes);
-          if (typeof part !== 'undefined') {
-            buildPrice += part.price;
-          }
+    try {
+      hardware.forEach((val, key) => {
+        const temp: string | Array<string> = selectedHardware[key];
+        if (typeof temp === 'string') {
+          buildPrice += val.data.get(temp).price;
+        } else if (typeof temp === 'object') {
+          temp.map((elem) => {
+            buildPrice += val.data.get(elem).price;
+          });
         }
-      }
-    }
+      });
+    } catch (err) {}
 
-    let o = findOsByName(selectedOs);
+    try {
+      software.forEach((val, key) => {
+        buildPrice += val.data.get(selectedSoftware[key]).price;
+      });
+    } catch (err) {}
 
-    if (typeof o !== 'undefined') {
-      buildPrice += o.price;
-    }
-
-    summaryPrice = buildPrice * 1.25 + testingCost;
+    summaryPrice = buildPrice * 1.25 + testingPrice;
 
     if (warranty > 1) {
       summaryPrice += 200;
     }
-  }*/
-
-  if (isModeCreate) {
   }
 </script>
 
