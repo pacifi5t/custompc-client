@@ -2,7 +2,8 @@
   export let currentRoute;
   export let params;
 
-  let snackbarNotAllParts;
+  let snackbarNotAllHardware;
+  let snackbarNotAllSoftware;
 
   import Textfield from '@smui/textfield/styled';
   import HelperText from '@smui/textfield/helper-text/styled';
@@ -31,7 +32,7 @@
     ['case', new Component('Корпус', true)]
   ]);
   const software = new Map([
-    ['os', new Component('Операционная система', true)]
+    ['os', new Component('Предустановленная ОС', true)]
   ]);
   const warrantyOptions = [
     { label: 'Стандартная (1 год)', value: 1 },
@@ -68,24 +69,25 @@
   }
 
   async function finishBuild() {
-    /*let arr = [];
-    try {
-      for (const elem of partTypes) {
-        const part = findPartById(selectedParts[elem.type], partTypes);
-        arr.push(part.id);
-      }
+    const tempHardware = [];
+    const tempSoftware = [];
 
-      for (const elem of partArrayTypes) {
-        const array = selectedPartArrays[elem.type];
-        for (const subElem of array) {
-          const part = findPartById(subElem, partArrayTypes);
-          arr.push(part.id);
-        }
+    for (const [key, _val] of hardware) {
+      const temp = selectedHardware[key];
+      if (temp.length === 0) {
+        snackbarNotAllHardware.open();
+        return;
       }
-    } catch (err) {
-      //console.error(err);
-      snackbarNotAllParts.open();
-      return;
+      tempHardware.push(temp);
+    }
+
+    for (const [key, _val] of software) {
+      const temp = selectedSoftware[key];
+      if (typeof temp === 'undefined') {
+        snackbarNotAllSoftware.open();
+        return;
+      }
+      tempSoftware.push(temp);
     }
 
     const result = await axios.post(requestUrl + '/custombuilds', {
@@ -94,10 +96,10 @@
       price: buildPrice,
       warranty: warranty,
       status: 'relevant',
-      parts: arr,
-      soft: [findOsByName(selectedOs).id]
+      parts: tempHardware,
+      soft: tempSoftware
     });
-    console.log(result);*/
+    console.log(result);
   }
 
   let name = '';
@@ -213,22 +215,26 @@
           {/each}
         </Group>
 
-        <Button style="margin: 20px 0;" on:click={finishBuild}
-          >Сохранить сборку</Button
-        >
+        <Button style="margin: 20px 0;" on:click={finishBuild}>
+          Сохранить сборку
+        </Button>
       </div>
       <div class="half-page">
         <div style="display: flex; flex-direction: column;">
-          <!--<Select
-            bind:value={selectedSoftware.os}
-            label="Предустановленная ОС"
-            class="global-select"
-            required
-          >
-            {#each softwareArray as [key, value]}
-              <Option value={value.data[0].name}>{value.data[0].name}</Option>
-            {/each}
-          </Select>-->
+          {#each softwareArray as [key, value]}
+            <Select
+              bind:value={selectedSoftware[key]}
+              label="Предустановленная ОС"
+              class="global-select"
+              required
+            >
+              {#each Array.from(value.data.values()) as elem}
+                <Option value={elem.id}>
+                  {elem.name}
+                </Option>
+              {/each}
+            </Select>
+          {/each}
           <Select
             bind:value={warranty}
             label="Гарантия"
@@ -257,8 +263,15 @@
   </Content>
 </Paper>
 
-<Snackbar bind:this={snackbarNotAllParts}>
+<Snackbar bind:this={snackbarNotAllHardware}>
   <Label>Не все комплектующие выбраны</Label>
+  <Actions>
+    <IconButton class="material-icons" title="Dismiss">close</IconButton>
+  </Actions>
+</Snackbar>
+
+<Snackbar bind:this={snackbarNotAllSoftware}>
+  <Label>Не все ПО выбрано</Label>
   <Actions>
     <IconButton class="material-icons" title="Dismiss">close</IconButton>
   </Actions>
@@ -267,6 +280,6 @@
 <style>
   .half-page {
     width: 50%;
-    margin: 20px;
+    margin: 32px;
   }
 </style>
