@@ -101,10 +101,10 @@
             <Button on:click={addToCartList(build.id)}>
               <Label>Купить</Label>
             </Button>
+            <Button on:click={navigateTo(`configurator/edit/${build.id}`)}>
+              <Label>Конфигурировать</Label>
+            </Button>
             {#if getCookie('urole') === 'admin'}
-              <Button on:click={navigateTo(`configurator/edit/${build.id}`)}>
-                <Label>Изменить</Label>
-              </Button>
               <Button on:click={remove(build.id)}>
                 <Label>Удалить</Label>
               </Button>

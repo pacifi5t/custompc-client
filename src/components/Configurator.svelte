@@ -82,7 +82,7 @@
     const tempSoftware = [];
 
     for (const [key, _val] of hardware) {
-      const temp = selectedHardware[key];
+      const temp: string | any[] = selectedHardware[key];
       if (temp.length === 0) {
         snackbarNotAllHardware.open();
         return;
@@ -105,6 +105,38 @@
       price: buildPrice,
       warranty: warranty,
       status: 'relevant',
+      parts: tempHardware,
+      soft: tempSoftware
+    });
+    console.log(result);
+  }
+  
+  async function generatePdf() {
+    const tempHardware = [];
+    const tempSoftware = [];
+
+    for (const [key, _val] of hardware) {
+      const temp = selectedHardware[key];
+      if (temp.length === 0) {
+        snackbarNotAllHardware.open();
+        return;
+      }
+      tempHardware.push(temp);
+    }
+
+    for (const [key, _val] of software) {
+      const temp = selectedSoftware[key];
+      if (typeof temp === 'undefined') {
+        snackbarNotAllSoftware.open();
+        return;
+      }
+      tempSoftware.push(temp);
+    }
+
+    const result = await axios.post(requestUrl + '/custombuilds/pdf', {
+      name: name,
+      price: buildPrice,
+      warranty: warranty,
       parts: tempHardware,
       soft: tempSoftware
     });
@@ -242,6 +274,9 @@
 
         <Button style="margin: 20px 0;" on:click={finishBuild}>
           Сохранить сборку
+        </Button>
+        <Button style="margin: 20px 0;" color="secondary" on:click={generatePdf}>
+          Сохранить в PDF
         </Button>
       </div>
       <div class="half-page">
