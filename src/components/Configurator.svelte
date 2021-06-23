@@ -18,6 +18,7 @@
   import { getCookie } from '../cookies';
   import { requestUrl, Component } from '../utils';
   import axios from 'axios';
+import { navigateTo } from 'svelte-router-spa';
 
   const isModeCreate = currentRoute.namedParams.mode === 'create';
 
@@ -141,6 +142,10 @@
       soft: tempSoftware
     });
     console.log(result);
+
+    var a = document.createElement('a');
+    a.href = `http://localhost:9999/pdf/${name}.pdf`;
+    a.click();
   }
 
   async function updateFields() {
