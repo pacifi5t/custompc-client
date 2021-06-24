@@ -4,8 +4,8 @@
 
   const requestUrl = 'http://localhost:9999/api/v1';
 
-  import { Route, Navigate, navigateTo } from 'svelte-router-spa';
-  import Button, { Label, Icon } from '@smui/button/styled';
+  import { Route, Navigate } from 'svelte-router-spa';
+  import Button, { Label } from '@smui/button/styled';
   import IconButton from '@smui/icon-button/styled';
   import Dialog, { Title, Content, Actions } from '@smui/dialog/styled';
   import DataTable, { Head, Body, Row, Cell } from '@smui/data-table/styled';

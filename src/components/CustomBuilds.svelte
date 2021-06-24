@@ -4,26 +4,16 @@
 
   const requestUrl = 'http://localhost:9999/api/v1';
 
-  import { Route, Navigate, navigateTo } from 'svelte-router-spa';
-  import Textfield from '@smui/textfield/styled';
-  import HelperText from '@smui/textfield/helper-text/styled';
+  import { navigateTo } from 'svelte-router-spa';
   import Button, { Label, Icon } from '@smui/button/styled';
-  import IconButton from '@smui/icon-button/styled';
-  import List, { Item, Text, Group, Subheader, Meta } from '@smui/list/styled';
-  import Checkbox from '@smui/checkbox/styled';
-  import Radio from '@smui/radio/styled';
   import LayoutGrid, { Cell } from '@smui/layout-grid/styled';
-  import Paper, { Title, Content } from '@smui/paper/styled';
-  import { getCookie, removeCookie } from '../cookies';
+  import { Content } from '@smui/paper/styled';
+  import { getCookie } from '../cookies';
   import axios from 'axios';
-  import { createEventDispatcher } from 'svelte';
   import Card, {
     PrimaryAction,
-    Media,
-    MediaContent,
     Actions,
-    ActionButtons,
-    ActionIcons
+    ActionButtons
   } from '@smui/card/styled';
 
   async function getBuilds() {
@@ -33,12 +23,12 @@
 
   async function updateBuilds() {
     getBuilds()
-    .then((val) => {
-      builds = val;
-    })
-    .catch((err) => {
-      //console.error(err);
-    });
+      .then((val) => {
+        builds = val;
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }
 
   async function addToCartList(id: string) {
@@ -46,14 +36,14 @@
       params: {
         id: getCookie('uid')
       }
-    })
-    
+    });
+
     const result = await axios.post(requestUrl + '/items', {
       cartId: resCart.data[0].id,
       buildId: id,
       quantity: 1,
       buildType: 'Custom'
-    })
+    });
     console.log(result);
   }
 
@@ -70,8 +60,6 @@
   $: builds = [];
 
   updateBuilds();
-  
-
 </script>
 
 <LayoutGrid>

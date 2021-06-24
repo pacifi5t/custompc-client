@@ -18,7 +18,6 @@
   import { getCookie } from '../cookies';
   import { requestUrl, Component } from '../utils';
   import axios from 'axios';
-import { navigateTo } from 'svelte-router-spa';
 
   const isModeCreate = currentRoute.namedParams.mode === 'create';
 
@@ -33,7 +32,8 @@ import { navigateTo } from 'svelte-router-spa';
     ['case', new Component('Корпус', true)]
   ]);
   const software = new Map([
-    ['os', new Component('Предустановленная ОС', true)]
+    ['os', new Component('Предустановленная ОС', true)],
+    ['office', new Component('Офисный пакет', true)]
   ]);
   const warrantyOptions = [
     { label: 'Стандартная (1 год)', value: 1 },
@@ -111,7 +111,7 @@ import { navigateTo } from 'svelte-router-spa';
     });
     console.log(result);
   }
-  
+
   async function generatePdf() {
     const tempHardware = [];
     const tempSoftware = [];
@@ -155,14 +155,14 @@ import { navigateTo } from 'svelte-router-spa';
       fetchData('/custombuilds/software')
     ]);
     console.log(totalInfo);
-    
+
     name = totalInfo[0].name;
-    warranty = totalInfo[0].warranty;    
+    warranty = totalInfo[0].warranty;
     totalInfo[1].forEach((elem) => {
-      if(typeof selectedHardware[elem.type] === 'string') {
+      if (typeof selectedHardware[elem.type] === 'string') {
         selectedHardware[elem.type] = elem.id;
       } else {
-        selectedHardware[elem.type].push(elem.id); 
+        selectedHardware[elem.type].push(elem.id);
       }
     });
     totalInfo[2].forEach((elem) => {
@@ -280,7 +280,11 @@ import { navigateTo } from 'svelte-router-spa';
         <Button style="margin: 20px 0;" on:click={finishBuild}>
           Сохранить сборку
         </Button>
-        <Button style="margin: 20px 0;" color="secondary" on:click={generatePdf}>
+        <Button
+          style="margin: 20px 0;"
+          color="secondary"
+          on:click={generatePdf}
+        >
           Сохранить в PDF
         </Button>
       </div>
@@ -289,7 +293,7 @@ import { navigateTo } from 'svelte-router-spa';
           {#each softwareArray as [key, value]}
             <Select
               bind:value={selectedSoftware[key]}
-              label="Предустановленная ОС"
+              label={value.label}
               class="global-select"
               required
             >
