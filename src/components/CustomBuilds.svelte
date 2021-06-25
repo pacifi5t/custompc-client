@@ -3,10 +3,14 @@
   export let params;
 
   const requestUrl = 'http://localhost:9999/api/v1';
+  const uid = getCookie('uid');
 
   import { navigateTo } from 'svelte-router-spa';
   import Button, { Label } from '@smui/button/styled';
   import LayoutGrid, { Cell } from '@smui/layout-grid/styled';
+  import Dialog, { Title } from '@smui/dialog/styled';
+  import IconButton from '@smui/icon-button/styled';
+  import Slider from '@smui/slider/styled';
   import { Content } from '@smui/paper/styled';
   import { getCookie } from '../cookies';
   import axios from 'axios';
@@ -25,6 +29,7 @@
     getBuilds()
       .then((val) => {
         builds = val;
+        console.log(builds);
       })
       .catch((err) => {
         console.error(err);
@@ -34,7 +39,7 @@
   async function addToCartList(id: string) {
     const resCart = await axios.get(requestUrl + '/users/cart', {
       params: {
-        id: getCookie('uid')
+        id: uid
       }
     });
 
@@ -43,6 +48,21 @@
       buildId: id,
       quantity: 1,
       buildType: 'Custom'
+    });
+    console.log(result);
+  }
+
+  function leaveRating(buildId: string) {
+    open = true;
+    ratedBuildId = buildId;
+  }
+
+  async function sendRating() {
+    const result = await axios.post(requestUrl + '/custombuilds/rating', {
+      buildId: ratedBuildId,
+      value: value,
+      authorId: uid,
+      message: 'some msg'
     });
     console.log(result);
   }
@@ -56,6 +76,10 @@
     console.log(result);
     updateBuilds();
   }
+
+  let open = false;
+  let value = 5;
+  let ratedBuildId: string;
 
   $: builds = [];
 
@@ -77,6 +101,9 @@
               {build.name}
             </h2>
             <h3 class="mdc-typography--subtitle2" id="price">
+              {#if build.rating !== null}
+                {build.rating}*
+              {/if}
               {build.price} $
             </h3>
             <h3 class="mdc-typography--subtitle2" id="author">
@@ -86,16 +113,35 @@
         </PrimaryAction>
         <Actions>
           <ActionButtons>
-            <Button on:click={addToCartList(build.id)}>
-              <Label>Купить</Label>
-            </Button>
-            <Button on:click={navigateTo(`configurator/edit/${build.id}`)}>
-              <Label>Конфигурировать</Label>
-            </Button>
+            <IconButton
+              class="material-icons"
+              color="primary"
+              on:click={addToCartList(build.id)}
+            >
+              add_shopping_cart
+            </IconButton>
+            <IconButton
+              class="material-icons"
+              color="primary"
+              on:click={leaveRating(build.id)}
+            >
+              star_rate
+            </IconButton>
+            <IconButton
+              class="material-icons"
+              color="primary"
+              on:click={navigateTo(`configurator/edit/${build.id}`)}
+            >
+              settings_suggest
+            </IconButton>
             {#if getCookie('urole') === 'admin'}
-              <Button on:click={remove(build.id)}>
-                <Label>Удалить</Label>
-              </Button>
+              <IconButton
+                class="material-icons"
+                color="primary"
+                on:click={remove(build.id)}
+              >
+                delete
+              </IconButton>
             {/if}
           </ActionButtons>
         </Actions>
@@ -103,6 +149,35 @@
     </Cell>
   {/each}
 </LayoutGrid>
+
+<Dialog
+  bind:open
+  aria-labelledby="simple-title"
+  aria-describedby="simple-content"
+>
+  <Title id="simple-title">Рейтинг</Title>
+  <Content id="simple-content">
+    <Slider
+      bind:value
+      min={1}
+      max={5}
+      step={1}
+      discrete
+      tickMarks
+      input$aria-label="Tick mark slider"
+    />
+  </Content>
+  <Actions>
+    <Button
+      on:click={() => {
+        open = false;
+        sendRating();
+      }}
+    >
+      Оставить оценку
+    </Button>
+  </Actions>
+</Dialog>
 
 <style>
   #price,
