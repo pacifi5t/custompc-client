@@ -4,7 +4,7 @@
 
   const requestUrl = 'http://localhost:9999/api/v1';
 
-  import { Route, Navigate } from 'svelte-router-spa';
+  import { Route, Navigate, navigateTo } from 'svelte-router-spa';
   import Button, { Label } from '@smui/button/styled';
   import IconButton from '@smui/icon-button/styled';
   import Dialog, { Title, Content, Actions } from '@smui/dialog/styled';
@@ -12,10 +12,11 @@
   import { getCookie, removeCookie } from '../cookies';
   import axios from 'axios';
 
-  let orders = [];
-  $: parsedOrders = orders;
+  let cartContents = [];
+  $: parsedCartContents = cartContents;
   let open;
   let uname = getCookie('uname');
+  const uid = getCookie('uid');
 
   function logOut() {
     removeCookie('uname');
@@ -25,9 +26,9 @@
     uname = getCookie('uname');
   }
 
-  async function updateOrders() {
-    orders = [];
-    const uid = getCookie('uid');
+  async function updateCartContents() {
+    cartContents = [];
+
     if (uid === null || typeof uid === 'undefined') {
       return;
     }
@@ -48,19 +49,31 @@
             id: elem.custom_build_id
           }
         });
-      } else {
+      } else if (elem.company_build_id !== null) {
         res = await axios.get(requestUrl + '/companybuilds', {
           params: {
             id: elem.company_build_id
           }
         });
       }
-      orders = [...orders, res.data];
+
+      if (typeof res !== 'undefined') {
+        cartContents = [...cartContents, res.data];
+      }
     }
-    console.log(orders);
+    console.log(cartContents);
   }
 
-  updateOrders();
+  async function order() {
+    const result = await axios.post(requestUrl + '/orders', {
+      userId: uid,
+      status: 'pending'
+    });
+    console.log(result);
+    navigateTo('user');
+  }
+
+  updateCartContents();
 </script>
 
 <div>
@@ -77,8 +90,8 @@
         <div class="nav-item"><Navigate to="user">{uname}</Navigate></div>
         <IconButton
           class="material-icons"
-          on:click={ async () => {
-            await updateOrders();
+          on:click={async () => {
+            await updateCartContents();
             open = true;
           }}
         >
@@ -115,7 +128,7 @@
         </Row>
       </Head>
       <Body>
-        {#each parsedOrders as order}
+        {#each parsedCartContents as order}
           <Row>
             <Cell>{order.name}</Cell>
             <Cell>{order.price}</Cell>
@@ -127,7 +140,7 @@
     </DataTable>
   </Content>
   <Actions>
-    <Button>
+    <Button on:click={order}>
       <Label>Оформить заказ</Label>
     </Button>
     <Button>
