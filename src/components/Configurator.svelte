@@ -20,6 +20,7 @@
   import axios from 'axios';
 
   const isModeCreate = currentRoute.namedParams.mode === 'create';
+  const isModeCompany = currentRoute.namedParams.mode === 'company';
 
   const hardware = new Map([
     ['cpu', new Component('Процессор', true)],
@@ -100,16 +101,29 @@
       tempSoftware.push(temp);
     }
 
-    const result = await axios.post(requestUrl + '/custombuilds', {
-      authorId: getCookie('uid'),
-      name: name,
-      price: buildPrice,
-      warranty: warranty,
-      status: 'relevant',
-      parts: tempHardware,
-      soft: tempSoftware
-    });
-    console.log(result);
+    if (isModeCompany) {
+      const result = await axios.post(requestUrl + '/companybuilds', {
+        name: name,
+        price: buildPrice,
+        tasks: task,
+        warranty: warranty,
+        status: 'relevant',
+        parts: tempHardware,
+        soft: tempSoftware
+      });
+      console.log(result);
+    } else {
+      const result = await axios.post(requestUrl + '/custombuilds', {
+        authorId: getCookie('uid'),
+        name: name,
+        price: buildPrice,
+        warranty: warranty,
+        status: 'relevant',
+        parts: tempHardware,
+        soft: tempSoftware
+      });
+      console.log(result);
+    }
   }
 
   async function generatePdf() {
@@ -171,6 +185,7 @@
   }
 
   let name = '';
+  let task = '';
   let selectedHardware = {
     cpu: '',
     mb: '',
@@ -196,7 +211,7 @@
   fillMap(hardware, '/parts/type');
   fillMap(software, '/software/type');
 
-  if (!isModeCreate) {
+  if (!isModeCreate && !isModeCompany) {
     updateFields();
   }
 
@@ -250,6 +265,20 @@
         >
           <HelperText slot="helper">Назовите свое творение</HelperText>
         </Textfield>
+
+        {#if isModeCompany}
+          <Textfield
+            style="width: 20em"
+            variant="standard"
+            bind:value={task}
+            label="Задача"
+            required
+          >
+            <HelperText slot="helper"
+              >Задача для которой предназначена сборка</HelperText
+            >
+          </Textfield>
+        {/if}
 
         <Group>
           {#each hardwareArray as [key, value]}

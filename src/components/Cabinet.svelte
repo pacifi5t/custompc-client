@@ -2,19 +2,14 @@
   export let currentRoute;
   export let params;
 
-  import Textfield from '@smui/textfield/styled';
-  import HelperText from '@smui/textfield/helper-text/styled';
-  import Button, { Label, Icon } from '@smui/button/styled';
-  import IconButton from '@smui/icon-button/styled';
-  import List, { Item, Text, Group, Subheader, Meta } from '@smui/list/styled';
-  import Select, { Option } from '@smui/select/styled';
-  import Snackbar, { Actions } from '@smui/snackbar/styled';
+  import { Text } from '@smui/list/styled';
+  import Button, { Label } from '@smui/button/styled';
   import Paper, { Title, Content, Subtitle } from '@smui/paper/styled';
   import DataTable, { Head, Body, Row, Cell } from '@smui/data-table/styled';
-  import Card, { PrimaryAction, ActionButtons } from '@smui/card/styled';
   import { getCookie } from '../cookies';
   import { requestUrl } from '../utils';
   import axios from 'axios';
+import { navigateTo } from 'svelte-router-spa';
 
   async function updateOrders() {
     const orderList = await axios.get(requestUrl + '/users/orders', {
@@ -66,6 +61,7 @@
 
   const name = getCookie('uname');
   const uid = getCookie('uid');
+  const urole = getCookie('urole');
   let userData = axios.get(requestUrl + '/users', {
     params: {
       username: name,
@@ -92,6 +88,14 @@
     {:catch err}
       <Text>{err}</Text>
     {/await}
+    
+    {#if urole === 'admin'}
+    <Button on:click={() => {navigateTo('configurator/company')}}>
+      Создать новую сборку компании
+    </Button>
+    {/if}
+    
+
     <Title style="margin-top: 60px;">Список заказов</Title>
     {#each orders as ord}
       <div class="order">
