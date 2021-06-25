@@ -7,7 +7,7 @@
 
   import Textfield from '@smui/textfield/styled';
   import HelperText from '@smui/textfield/helper-text/styled';
-  import Button, { Label, Icon } from '@smui/button/styled';
+  import Button, { Label } from '@smui/button/styled';
   import IconButton from '@smui/icon-button/styled';
   import List, { Item, Text, Group, Subheader, Meta } from '@smui/list/styled';
   import Select, { Option } from '@smui/select/styled';

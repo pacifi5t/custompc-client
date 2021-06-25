@@ -5,7 +5,7 @@
   const requestUrl = 'http://localhost:9999/api/v1';
 
   import { navigateTo } from 'svelte-router-spa';
-  import Button, { Label, Icon } from '@smui/button/styled';
+  import Button, { Label } from '@smui/button/styled';
   import LayoutGrid, { Cell } from '@smui/layout-grid/styled';
   import { Content } from '@smui/paper/styled';
   import { getCookie } from '../cookies';
