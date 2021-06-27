@@ -9,7 +9,7 @@
   import { getCookie } from '../cookies';
   import { requestUrl } from '../utils';
   import axios from 'axios';
-import { navigateTo } from 'svelte-router-spa';
+  import { navigateTo } from 'svelte-router-spa';
 
   async function updateOrders() {
     const orderList = await axios.get(requestUrl + '/users/orders', {
@@ -88,13 +88,13 @@ import { navigateTo } from 'svelte-router-spa';
     {:catch err}
       <Text>{err}</Text>
     {/await}
-    
+<!--    
     {#if urole === 'admin'}
     <Button on:click={() => {navigateTo('configurator/company')}}>
       Создать новую сборку компании
     </Button>
     {/if}
-    
+-->    
 
     <Title style="margin-top: 60px;">Список заказов</Title>
     {#each orders as ord}

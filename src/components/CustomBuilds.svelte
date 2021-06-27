@@ -104,7 +104,7 @@
               {#if build.rating !== null}
                 {build.rating}*
               {/if}
-              {build.price} $
+              {build.price}$
             </h3>
             <h3 class="mdc-typography--subtitle2" id="author">
               {build.username}

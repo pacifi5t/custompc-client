@@ -265,7 +265,7 @@
         >
           <HelperText slot="helper">Назовите свое творение</HelperText>
         </Textfield>
-
+<!--
         {#if isModeCompany}
           <Textfield
             style="width: 20em"
@@ -279,7 +279,7 @@
             >
           </Textfield>
         {/if}
-
+-->
         <Group>
           {#each hardwareArray as [key, value]}
             <Subheader style="margin-top: 40px;">{value.label}</Subheader>
